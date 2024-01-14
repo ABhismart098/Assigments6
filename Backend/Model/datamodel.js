@@ -98,21 +98,34 @@ const upload = multer({ storage: storage });
 const importJsonData = async (fileBuffer) => {
   try {
     const jsonData = JSON.parse(fileBuffer.toString());
-    await YourDataModel.insertMany(jsonData);
+
+    // Filter out entries with missing 'sector' or 'country' fields
+    const validEntries = jsonData.filter(entry => entry.sector && entry.country);
+
+    // Validate and insert each valid entry
+    for (const entry of validEntries) {
+      try {
+        // Validate the entry
+        await YourDataModel.validate(entry);
+
+        // Insert the entry
+        await YourDataModel.create(entry);
+      } catch (validationError) {
+        // Log validation errors
+        const validationErrors = Object.values(validationError.errors).map(({ path, kind, value }) => ({
+          path,
+          kind,
+          value,
+          message: validationError.errors[path].message,
+        }));
+
+        console.error('Validation Error for entry:', validationErrors);
+      }
+    }
+
     console.log('Data imported successfully');
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      // Handle Mongoose validation error
-      const validationErrors = Object.values(error.errors).map(({ path, kind, value }) => ({
-        path,
-        kind,
-        value,
-        message: error.errors[path].message,
-      }));
-      console.error('Validation Error:', validationErrors);
-    } else {
-      console.error('Error importing JSON data:', error);
-    }
+    console.error('Error importing JSON data:', error);
   }
 };
 
