@@ -1,10 +1,11 @@
+// src/App.js
 import React from 'react';
-import YourChartComponent from './Components/Chart';
+import ChartComponent from './Components/Chart';
 
 function App() {
   return (
-    <div>
-      <YourChartComponent />
+    <div className="App">
+      <ChartComponent />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 // const express = require('express');
 // const router = express.Router();
 // const yourController = require('../Controller/controller'); // Adjust the path accordingly
@@ -22,12 +23,13 @@
 // module.exports = router;
 const express = require('express');
 const router = express.Router();
-const yourController = require('../Controller/controller'); // Adjust the path accordingly
 
-// Define routes
+const yourController = require('../Controller/controller'); // Adjust the path accordingly
 
 // Create a new document
 router.post('/documents', yourController.createDocument);
+// Import JSON documents
+router.post('/import', yourController.importJsonDocuments);
 
 // Get all documents
 router.get('/documents', yourController.getAllDocuments);

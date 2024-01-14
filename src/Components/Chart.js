@@ -1,362 +1,424 @@
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
+// // src/ChartComponent.js
+// import React, { useState, useEffect } from 'react';
 // import { Line } from 'react-chartjs-2';
 
-// const YourChartComponent = () => {
+// const ChartComponent = () => {
 //   const [chartData, setChartData] = useState({});
+
+//   useEffect(() => {
+//     // Fetch chart data from your Express API endpoint
+//     fetch('/api/chart')
+//       .then((response) => response.json())
+//       .then((data) => {
+//         // Process data to fit Chart.js format
+//         const labels = data.map((entry) => entry.label);
+//         const values = data.map((entry) => entry.value);
+
+//         setChartData({
+//           labels,
+//           datasets: [
+//             {
+//               label: 'Chart Data',
+//               data: values,
+//               fill: false,
+//               borderColor: 'rgb(75, 192, 192)',
+//               tension: 0.1,
+//             },
+//           ],
+//         });
+//       })
+//       .catch((error) => console.error('Error fetching chart data:', error));
+//   },
+//    []);
+
+//   return (
+//     <div>
+//       <h2>Chart Component</h2>
+//       <Line data={chartData} />
+//     </div>
+//   );
+// };
+
+// export default ChartComponent;
+// src/ChartComponent.js
+// import React, { useState, useEffect } from 'react';
+// import { Line } from 'react-chartjs-2';
+
+// const ChartComponent = () => {
+//   const [chartData, setChartData] = useState({});
+
+//   useEffect(() => {
+//     // Fetch chart data from your Express API endpoint
+//     fetch('http://localhost:3001/api/chart')  // Update the URL to match your backend server
+//       .then((response) => response.json())
+//       .then((data) => {
+//         // Process data to fit Chart.js format
+//         const labels = data.map((entry) => entry.label);
+//         const values = data.map((entry) => entry.value);
+
+//         setChartData({
+//           labels,
+//           datasets: [
+//             {
+//               label: 'Chart Data',
+//               data: values,
+//               fill: false,
+//               borderColor: 'rgb(75, 192, 192)',
+//               tension: 0.1,
+//             },
+//           ],
+//         });
+//       })
+//       .catch((error) => console.error('Error fetching chart data:', error));
+//   }, []);
+
+//   return (
+//     <div>
+//       <h2>Chart Component</h2>
+//       <Line data={chartData} />
+//     </div>
+//   );
+// };
+
+// export default ChartComponent;
+// import React, { useState, useEffect } from 'react';
+// import { Line } from 'react-chartjs-2';
+
+// const ChartComponent = () => {
+//   const [chartData, setChartData] = useState({
+//     labels: [],
+//     datasets: [
+//       {
+//         label: 'Chart Data',
+//         data: [],
+//         fill: false,
+//         borderColor: 'rgb(75, 192, 192)',
+//         tension: 0.1,
+//       },
+//     ],
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
 //   useEffect(() => {
 //     const fetchData = async () => {
 //       try {
-//         // Replace 'YOUR_BACKEND_API_ENDPOINT' with the actual endpoint to fetch data from your backend
-//         const response = await axios.get('http://localhost:3001');
-//         const data = response.data; // Assuming your data is an array of objects with required fields
+//         const response = await fetch('http://localhost:3001/api/chart');
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch data');
+//         }
 
-//         // Process your data and format it for the chart
-//         const formattedData = {
-//           labels: data.map(item => item.date), // Replace 'date' with your actual date field
-//           datasets: [
-//             {
-//               label: 'Intensity',
-//               data: data.map(item => item.intensity), // Replace 'intensity' with your actual intensity field
-//               borderColor: 'rgba(75,192,192,1)',
-//               borderWidth: 2,
-//               fill: false,
-//             },
-//             // Add more datasets or customize as needed
-//           ],
-//         };
+//         const data = await response.json();
 
-//         setChartData(formattedData);
+//         if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('label') && data[0].hasOwnProperty('value')) {
+//           const labels = data.map((entry) => entry.label);
+//           const values = data.map((entry) => entry.value);
+
+//           setChartData({
+//             labels,
+//             datasets: [
+//               {
+//                 label: 'Chart Data',
+//                 data: values,
+//                 fill: false,
+//                 borderColor: 'rgb(75, 192, 192)',
+//                 tension: 0.1,
+//               },
+//             ],
+//           });
+//         } else {
+//           console.error('Invalid data format:', data);
+//           setError('Invalid data format');
+//         }
 //       } catch (error) {
-//         console.error('Error fetching data:', error.message);
+//         console.error('Error fetching chart data:', error);
+//         setError('Error fetching data');
+//       } finally {
+//         setLoading(false);
 //       }
 //     };
 
 //     fetchData();
 //   }, []);
 
+//   if (loading) {
+//     return <p>Loading...</p>;
+//   }
+
+//   if (error) {
+//     return <p>Error: {error}</p>;
+//   }
+
 //   return (
 //     <div>
-//       <h2>Your Chart Title</h2>
+//       <h2>Chart Component</h2>
 //       <Line data={chartData} />
 //     </div>
 //   );
 // };
 
-// export default YourChartComponent;
-// import React, { useEffect, useState } from "react";
-// import { Bar, Line } from "react-chartjs-2";
-// import io from "socket.io-client";
-// import {
-//   Chart as ChartJS,
-//   Title,
-//   Tooltip,
-//   Legend,
-//   BarElement,
-//   CategoryScale,
-//   LinearScale,
-// } from "chart.js";
-// ChartJS.register(
-//   Title,
-//   Tooltip,
-//   Legend,
-//   BarElement,
-//   CategoryScale,
-//   LinearScale
-// );
-
-// const socket = io("http://localhost:3001"); // Connect to the backend server
-
-// const ChartComponent = ({ chartType, customizationOptions }) => {
-//   const [chartData, setChartData] = useState({
-//     labels: [],
-//     datasets: [
-//       {
-//         label: "Data",
-//         data: [],
-//         backgroundColor: "rgba(75,192,192,0.2)",
-//         borderColor: "rgba(75,192,192,1)",
-//         borderWidth: 1,
-//       },
-//     ],
-//   });
-
-//   const createUpdatedData = (newData) => {
-//     let receivedData = newData
-//       .filter((data) => data?.end_year !== "" && data?.intensity !== "")
-//       .sort((a, b) => a.end_year - b.end_year);
-//     if (receivedData?.length > 0) {
-//       let updatedData = { ...chartData };
-//       updatedData.labels = receivedData.map((row) => row?.end_year);
-//       updatedData.datasets[0].data = receivedData.map((row) => row?.intensity);
-//       setChartData(updatedData);
-//     }
-//   };
-
-//   useEffect(() => {
-//     socket.on("updateChartData", (newData) => {
-//       createUpdatedData(newData);
-//     });
-//     return () => {
-//       socket.off("updateChartData");
-//     };
-//   }, );
-
-//   const options = {
-//     scales: {
-//       x: { ...customizationOptions.xAxis },
-//       y: { ...customizationOptions.yAxis },
-//     },
-//   };
-
-//   const Chart = chartType === "bar" ? Bar : Line;
-
-//   if (chartData?.labels?.length === 0) return <></>;
-
-//   return <Chart data={chartData} options={options} />;
-// };
-
 // export default ChartComponent;
-// import React, { useEffect, useState } from "react";
-// import { Bar, Line } from "react-chartjs-2";
-// import io from "socket.io-client";
-// import { Chart } from "react-chartjs-2"; // Import Chart from react-chartjs-2
-// import "chartjs-adapter-date-fns"; // Import the required date-fns adapter
-// // Change the import from this
-// import "chartjs-adapter-date-fns/locale/en";
+// import React, { useState, useEffect } from 'react';
+// import { Line } from 'react-chartjs-2';
 
-// // To this
-// import "chartjs-adapter-date-fns/dist/locale/en";
-// // Import the locale for English
-
-// const socket = io("http://localhost:3001"); // Connect to the backend server
-
-// const ChartComponent = ({ chartType, customizationOptions }) => {
+// const ChartComponent = () => {
 //   const [chartData, setChartData] = useState({
 //     labels: [],
 //     datasets: [
 //       {
-//         label: "Data",
+//         label: 'Chart Data',
 //         data: [],
-//         backgroundColor: "rgba(75,192,192,0.2)",
-//         borderColor: "rgba(75,192,192,1)",
-//         borderWidth: 1,
+//         fill: false,
+//         borderColor: 'rgb(75, 192, 192)',
+//         tension: 0.1,
 //       },
 //     ],
 //   });
-
-//   const createUpdatedData = (newData) => {
-//     let receivedData = newData
-//       .filter((data) => data?.end_year !== "" && data?.intensity !== "")
-//       .sort((a, b) => a.end_year - b.end_year);
-//     if (receivedData?.length > 0) {
-//       let updatedData = { ...chartData };
-//       updatedData.labels = receivedData.map((row) => row?.end_year);
-//       updatedData.datasets[0].data = receivedData.map((row) => row?.intensity);
-//       setChartData(updatedData);
-//     }
-//   };
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
 //   useEffect(() => {
-//     socket.on("updateChartData", (newData) => {
-//       createUpdatedData(newData);
-//     });
-//     return () => {
-//       socket.off("updateChartData");
-//     };
-//   }, []);
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3001/api/chart');
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch data');
+//         }
 
-//   const options = {
-//     scales: {
-//       x: { ...customizationOptions.xAxis },
-//       y: { ...customizationOptions.yAxis },
-//     },
-//   };
+//         const data = await response.json();
+//         console.log('Fetched data:', data); // Log data to see its structure
 
-//   if (chartData?.labels?.length === 0) return <></>;
+//         if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('label') && data[0].hasOwnProperty('value')) {
+//           const labels = data.map((entry) => entry.label);
+//           const values = data.map((entry) => entry.value);
 
-//   return <Chart type={chartType === "bar" ? "bar" : "line"} data={chartData} options={options} />;
-// };
-
-// export default ChartComponent;
-// import React, { useEffect, useState } from "react";
-// import { Chart } from "react-chartjs-2";
-// import io from "socket.io-client";
-// import { Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
-// import "chartjs-adapter-date-fns/dist/locale/en"; // Update the import path for the locale file
-
-// const socket = io("http://localhost:3001");
-
-// Chart.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
-
-// const ChartComponent = ({ chartType, customizationOptions }) => {
-//   const [chartData, setChartData] = useState({
-//     labels: [],
-//     datasets: [
-//       {
-//         label: "Data",
-//         data: [],
-//         backgroundColor: "rgba(75,192,192,0.2)",
-//         borderColor: "rgba(75,192,192,1)",
-//         borderWidth: 1,
-//       },
-//     ],
-//   });
-
-//   const createUpdatedData = (newData) => {
-//     let receivedData = newData
-//       .filter((data) => data?.end_year !== "" && data?.intensity !== "")
-//       .sort((a, b) => a.end_year - b.end_year);
-
-//     if (receivedData?.length > 0) {
-//       let updatedData = { ...chartData };
-//       updatedData.labels = receivedData.map((row) => row?.end_year);
-//       updatedData.datasets[0].data = receivedData.map((row) => row?.intensity);
-//       setChartData(updatedData);
-//     }
-//   };
-
-//   useEffect(() => {
-//     socket.on("updateChartData", (newData) => {
-//       createUpdatedData(newData);
-//     });
-
-//     return () => {
-//       socket.off("updateChartData");
-//     };
-//   }, [createUpdatedData]);
-
-//   const options = {
-//     scales: {
-//       x: { ...customizationOptions.xAxis },
-//       y: { ...customizationOptions.yAxis },
-//     },
-//   };
-
-//   if (chartData?.labels?.length === 0) return <></>;
-
-//   return <Chart type={chartType === "bar" ? "bar" : "line"} data={chartData} options={options} />;
-// };
-
-// export default ChartComponent;
-// import React, { useEffect, useState } from "react";
-// import { Chart } from "react-chartjs-2";
-// import io from "socket.io-client";
-// import { Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
-// import "chartjs-adapter-date-fns/dist/locale/en.js"; // Update the import path for the locale file
-
-// const socket = io("http://localhost:3001");
-
-// Chart.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
-
-// const ChartComponent = ({ chartType, customizationOptions }) => {
-//   const [chartData, setChartData] = useState({
-//     labels: [],
-//     datasets: [
-//       {
-//         label: "Data",
-//         data: [],
-//         backgroundColor: "rgba(75,192,192,0.2)",
-//         borderColor: "rgba(75,192,192,1)",
-//         borderWidth: 1,
-//       },
-//     ],
-//   });
-
-//   useEffect(() => {
-//     const createUpdatedData = (newData) => {
-//       let receivedData = newData
-//         .filter((data) => data?.end_year !== "" && data?.intensity !== "")
-//         .sort((a, b) => a.end_year - b.end_year);
-
-//       if (receivedData?.length > 0) {
-//         let updatedData = { ...chartData };
-//         updatedData.labels = receivedData.map((row) => row?.end_year);
-//         updatedData.datasets[0].data = receivedData.map((row) => row?.intensity);
-//         setChartData(updatedData);
+//           setChartData({
+//             labels,
+//             datasets: [
+//               {
+//                 label: 'Chart Data',
+//                 data: values,
+//                 fill: false,
+//                 borderColor: 'rgb(75, 192, 192)',
+//                 tension: 0.1,
+//               },
+//             ],
+//           });
+//         } else if (Array.isArray(data) && data.length === 0) {
+//           console.warn('Data is empty');
+//           setError('Data is empty');
+//         } else {
+//           console.error('Invalid data format:', data);
+//           setError('Invalid data format');
+//         }
+//       } catch (error) {
+//         console.error('Error fetching chart data:', error);
+//         setError('Error fetching data');
+//       } finally {
+//         setLoading(false);
 //       }
 //     };
 
-//     socket.on("updateChartData", (newData) => {
-//       createUpdatedData(newData);
-//     });
+//     fetchData();
+//   }, []);
 
-//     return () => {
-//       socket.off("updateChartData");
-//     };
-//   }, [chartData]);
+//   if (loading) {
+//     return <p>Loading...</p>;
+//   }
 
-//   const options = {
-//     scales: {
-//       x: { ...customizationOptions.xAxis },
-//       y: { ...customizationOptions.yAxis },
-//     },
-//   };
+//   if (error) {
+//     return <p>Error: {error}</p>;
+//   }
 
-//   if (chartData?.labels?.length === 0) return <></>;
-
-//   return <Chart type={chartType === "bar" ? "bar" : "line"} data={chartData} options={options} />;
+//   return (
+//     <div>
+//       <h2>Chart Component</h2>
+//       <Line data={chartData} />
+//     </div>
+//   );
 // };
 
 // export default ChartComponent;
-import React, { useEffect, useState } from "react";
-import { Chart } from "react-chartjs-2";
-import io from "socket.io-client";
-import { Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
-import "chartjs-adapter-date-fns/dist/locale/en/index.js"; // Update the import path for the locale file
+// import React, { useState, useEffect } from 'react';
+// import { Line } from 'react-chartjs-2';
 
-Chart.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+// const ChartComponent = () => {
+//   const [chartData, setChartData] = useState({
+//     labels: [],
+//     datasets: [
+//       {
+//         label: 'Chart Data',
+//         data: [],
+//         fill: false,
+//         borderColor: 'rgb(75, 192, 192)',
+//         tension: 0.1,
+//       },
+//     ],
+//   });
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
-const socket = io("http://localhost:3001");
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3001/api/documents'); // Replace with your actual backend API endpoint
+//         if (!response.ok) {
+//           throw new Error('Failed to fetch data');
+//         }
 
-const ChartComponent = ({ chartType, customizationOptions }) => {
+//         const data = await response.json();
+
+//         if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('label') && data[0].hasOwnProperty('value')) {
+//           const labels = data.map((entry) => entry.label);
+//           const values = data.map((entry) => entry.value);
+
+//           setChartData({
+//             labels,
+//             datasets: [
+//               {
+//                 label: 'Chart Data',
+//                 data: values,
+//                 fill: false,
+//                 borderColor: 'rgb(75, 192, 192)',
+//                 tension: 0.1,
+//               },
+//             ],
+//           });
+//         } else if (Array.isArray(data) && data.length === 0) {
+//           console.warn('Data is empty');
+//           setError('Data is empty');
+//         } else {
+//           console.error('Invalid data format:', data);
+//           setError('Invalid data format');
+//         }
+//       } catch (error) {
+//         console.error('Error fetching chart data:', error);
+//         setError('Error fetching data');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   if (loading) {
+//     return <p>Loading...</p>;
+//   }
+
+//   if (error) {
+//     return <p>Error: {error}</p>;
+//   }
+
+//   return (
+//     <div>
+//       <h2>Chart Component</h2>
+//       <Line data={chartData} />
+//     </div>
+//   );
+// };
+
+// export default ChartComponent;
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+
+const ChartComponent = () => {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
       {
-        label: "Data",
+        label: 'Chart Data',
         data: [],
-        backgroundColor: "rgba(75,192,192,0.2)",
-        borderColor: "rgba(75,192,192,1)",
-        borderWidth: 1,
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
       },
     ],
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const createUpdatedData = (newData) => {
-      let receivedData = newData
-        .filter((data) => data?.end_year !== "" && data?.intensity !== "")
-        .sort((a, b) => a.end_year - b.end_year);
-
-      if (receivedData?.length > 0) {
-        let updatedData = { ...chartData };
-        updatedData.labels = receivedData.map((row) => row?.end_year);
-        updatedData.datasets[0].data = receivedData.map((row) => row?.intensity);
-        setChartData(updatedData);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/documents'); // Replace with your actual backend API endpoint
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
       }
-    };
 
-    socket.on("updateChartData", (newData) => {
-      createUpdatedData(newData);
-    });
+      const data = await response.json();
 
-    return () => {
-      socket.off("updateChartData");
-    };
-  }, [chartData]);
-
-  const options = {
-    scales: {
-      x: { ...customizationOptions.xAxis },
-      y: { ...customizationOptions.yAxis },
-    },
+      processChartData(data);
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+      setError('Error fetching data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (chartData?.labels?.length === 0) return <></>;
+  const processChartData = (data) => {
+    if (Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('label') && data[0].hasOwnProperty('value')) {
+      const labels = data.map((entry) => entry.label);
+      const values = data.map((entry) => entry.value);
 
-  return <Chart type={chartType === "bar" ? "bar" : "line"} data={chartData} options={options} />;
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Chart Data',
+            data: values,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+        ],
+      });
+    } else if (Array.isArray(data) && data.length === 0) {
+      console.warn('Data is empty');
+      setError('Data is empty');
+    } else {
+      console.error('Invalid data format:', data);
+      setError('Invalid data format');
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, );
+
+  const handleImportData = async () => {
+    try {
+      const response = await fetch('path/to/your/json/data.json'); // Update with the path to your JSON file
+      if (!response.ok) {
+        throw new Error('Failed to fetch JSON data');
+      }
+
+      const jsonData = await response.json();
+
+      processChartData(jsonData);
+    } catch (error) {
+      console.error('Error importing JSON data:', error);
+      setError('Error importing data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
+  return (
+    <div>
+      <h2>Chart Component</h2>
+      <button onClick={handleImportData}>Import JSON Data</button>
+      <Line data={chartData} />
+    </div>
+  );
 };
 
 export default ChartComponent;
